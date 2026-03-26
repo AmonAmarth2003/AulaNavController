@@ -17,31 +17,39 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
+// All questions route
+object Routes {
+    const val QuestionA = "questionA"
+    const val QuestionB = "questionB"
+    const val QuestionC = "questionC"
+    const val QuestionD = "questionD"
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
 
+            val screens = listOf(
+                Routes.QuestionA,
+                Routes.QuestionB,
+                Routes.QuestionC,
+                Routes.QuestionD
+            )
+
             NavHost(
                 navController = navController,
                 startDestination = "home"
             ){
-                composable ("home") {Screen(
-                    "Home",
-                    backClick = {navController.navigate("screen1")},
-                    nextClick = {navController.navigate("screen2")}
+                composable ("home") {MainScreen(
+                    randomRoute = {navController.navigate(screens.random())}
                 )}
-                composable ("screen1") {Screen(
-                    "Screen1",
-                    backClick = {navController.navigate("home")},
-                    nextClick = {navController.navigate("screen2")}
-                )}
-                composable ("screen2") {Screen(
-                    "Screen2",
-                    backClick = {navController.navigate("home")},
-                    nextClick = {navController.navigate("screen1")}
-                )}
+
+                composable(Routes.QuestionA) { Screen(Routes.QuestionA) { navController.navigate("home") } }
+                composable(Routes.QuestionB) { Screen(Routes.QuestionB) { navController.navigate("home") } }
+                composable(Routes.QuestionC) { Screen(Routes.QuestionC) { navController.navigate("home") } }
+                composable(Routes.QuestionD) { Screen(Routes.QuestionD) { navController.navigate("home") } }
             }
         }
     }
@@ -51,7 +59,6 @@ class MainActivity : ComponentActivity() {
 fun Screen(
     screenName: String,
     backClick: () -> Unit, // Unit, return type of my func. Same as void
-    nextClick: () -> Unit
 ){
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -59,13 +66,29 @@ fun Screen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(screenName, fontSize = 30.sp)
-        Button(backClick) { Text("Anterior") }
-        Button(nextClick) { Text("Próximo") }
+        Button(backClick) { Text("Returnar a home") }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewScreen(){
-    Screen("Tela Preview", {} , { } )
+    Screen("Tela Preview", {} )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewMainScreen(){
+    MainScreen({});
+}
+
+@Composable
+fun MainScreen(randomRoute: () -> Unit){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(randomRoute) { Text("Começar", fontSize = 30.sp) }
+    }
 }
