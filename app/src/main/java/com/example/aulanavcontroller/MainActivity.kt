@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -19,11 +20,61 @@ import androidx.navigation.compose.rememberNavController
 
 // All questions route
 object Routes {
-    const val QuestionA = "questionA"
-    const val QuestionB = "questionB"
-    const val QuestionC = "questionC"
-    const val QuestionD = "questionD"
+    const val QUESTION_A = "questionA"
+    const val QUESTION_B = "questionB"
+    const val QUESTION_C = "questionC"
+    const val QUESTION_D = "questionD"
 }
+
+
+data class QuestionData(
+    val question: String,
+    val answerA: String,
+    val answerB: String,
+    val answerC: String,
+    val answerD: String,
+    val correctAnswer: String
+)
+
+val questionA = QuestionData(
+    //Resposta Correta: Evaporação
+    "Qual o nome do processo de transformação da água do estado líquido para o gasoso?",
+    "Condensação",
+    "Solidificação",
+    "Evaporação",
+    "Fusão",
+    "Evaporação"
+)
+
+val questionB = QuestionData(
+    // Resposta Correta: 7 lados
+    "Quantos lados tem um heptágono?",
+    "5 lados",
+    "6 lados",
+    "7 lados",
+    "8 Lados",
+    "7 lados"
+)
+
+val questionC = QuestionData(
+    // Resposta Correta: Albert Einstein
+    "Qual destes famosos cientistas é conhecido pela sua Teoria da Relatividade?",
+    "Isaac Newton",
+    "Galileu Galilei",
+    "Albert Einstein",
+    "Charles Darwin",
+    "Albert Einstein"
+)
+
+val questionD = QuestionData(
+    // Resposta Correta: C) Quatro (Melhor Diretor, Roteiro Adaptado, Edição e Fotografia)
+    "O filme “Cidade de Deus” foi indicado a quantas categorias no Oscar de 2004?",
+    "Duas",
+    "Três",
+    "Quatro",
+    "Cinco",
+    "Quatro"
+)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,11 +83,13 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             val screens = listOf(
-                Routes.QuestionA,
-                Routes.QuestionB,
-                Routes.QuestionC,
-                Routes.QuestionD
+                Routes.QUESTION_A,
+                Routes.QUESTION_B,
+                Routes.QUESTION_C,
+                Routes.QUESTION_D
             )
+
+            var amountRounds = 0
 
             NavHost(
                 navController = navController,
@@ -46,10 +99,10 @@ class MainActivity : ComponentActivity() {
                     randomRoute = {navController.navigate(screens.random())}
                 )}
 
-                composable(Routes.QuestionA) { Screen(Routes.QuestionA) { navController.navigate("home") } }
-                composable(Routes.QuestionB) { Screen(Routes.QuestionB) { navController.navigate("home") } }
-                composable(Routes.QuestionC) { Screen(Routes.QuestionC) { navController.navigate("home") } }
-                composable(Routes.QuestionD) { Screen(Routes.QuestionD) { navController.navigate("home") } }
+                composable(Routes.QUESTION_A) { QuestionScreen(questionA) {navController.navigate("home")} }
+                composable(Routes.QUESTION_B) { QuestionScreen(questionB) {navController.navigate("home")} }
+                composable(Routes.QUESTION_C) { QuestionScreen(questionC) {navController.navigate("home")} }
+                composable(Routes.QUESTION_D) { QuestionScreen(questionD) {navController.navigate("home")} }
             }
         }
     }
@@ -73,13 +126,13 @@ fun Screen(
 @Preview(showBackground = true)
 @Composable
 fun PreviewScreen(){
-    Screen("Tela Preview", {} )
+    Screen("Tela Preview") {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewMainScreen(){
-    MainScreen({});
+    MainScreen {}
 }
 
 @Composable
@@ -89,6 +142,35 @@ fun MainScreen(randomRoute: () -> Unit){
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(randomRoute) { Text("Começar", fontSize = 30.sp) }
+        Button(randomRoute) { Text( "Começar", fontSize = 30.sp) }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewQuestionScreen(){
+    QuestionScreen(questionA) {}
+}
+
+
+@Composable
+fun QuestionScreen(questionData : QuestionData, home: () -> Unit){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(questionData.question, fontSize = 20.sp)
+        Row() {
+            Column() {
+                Button({}){Text(questionData.answerA)}
+                Button({}){Text(questionData.answerB)}
+            }
+            Column() {
+                Button({}){Text(questionData.answerC)}
+                Button({}){Text(questionData.answerD)}
+            }
+        }
+        Button(home) { Text("Retornar") }
     }
 }
